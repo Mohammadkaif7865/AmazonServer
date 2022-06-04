@@ -16,15 +16,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 // app.use(express.json());
+//1 D
 app.get('/', (req, res) => {
     res.send("Express server is running");
 });
+
+//2 D
 app.get('/items/:collections', (req, res) => {
     db.collection(req.params.collections).find().toArray((err, result) => {
         if (err) throw err;
         res.send(result)
     });
 });
+//3 D
 app.get('/details/:id', (req, res) => {
     let id = Number(req.params.id)
     db.collection('products').find({ id: id }).toArray((err, result) => {
@@ -32,25 +36,28 @@ app.get('/details/:id', (req, res) => {
         res.send(result)
     });
 });
+// 4 D
 app.get('/products', (req, res) => {
     db.collection('products').find().toArray((err, result) => {
         if (err) throw err;
         res.send(result)
     });
 });
-// 4.D *
+//5. D
 app.get('/orderplaced', (req, res) => {
     db.collection('orderplaced').find().toArray((err, result) => {
         if (err) throw err;
         res.send(result)
     });
 });
+//6 D
 app.get('/cart', (req, res) => {
     db.collection('cart').find().toArray((err, result) => {
         if (err) throw err;
         res.send(result)
     });
 });
+//7 D
 app.get('/products_on_category_basis', (req, res) => {
     let query = {}
     if (req.query.category && req.query.sub_category) {
@@ -65,9 +72,10 @@ app.get('/products_on_category_basis', (req, res) => {
         res.send(result)
     });
 });
+//8 D
 app.get('/category_and_filter', (req, res) => {
     let query = {};
-    let sort = { cost: -1 }; //-1 for decent cost and 1 for ascending cost
+    let sort = { cost: 1 }; //-1 for decent cost and 1 for ascending cost
     let lcost = Number(req.query.lcost);
     let hcost = Number(req.query.hcost);
     if (req.query.category && req.query.sub_category) {
@@ -82,6 +90,40 @@ app.get('/category_and_filter', (req, res) => {
         res.send(result)
     });
 });
+//9 D
+app.post('/placeOrder', (req, res) => {
+    db.collection('orderplaced').insertMany(req.body, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+app.get('/testing', (req, res) => {
+    db.collection('orderplaced').find({ orderId: 1 }).toArray((err, result) => {
+        if (err) throw err;
+        let totalCost = 0;
+        let x = result[0].productIds;
+        // db.collection('products').find({ id: x[0][0] }).toArray((err, result) => {
+        //     let productCost = result[0].cost;
+        //     console.log(productCost);
+        //     let cost = productCost * x[0][1];
+        //     console.log(cost);
+        //     totalCost += cost;
+        //     console.log(totalCost);
+        // })
+        let y = 0;
+        db.collection('products').find({ id: x[0][0] }).toArray((err, result) => {
+            if (err) throw err;
+            y = result[0].cost;
+        });
+        console.log(y);
+        res.send(`${totalCost}`);
+    });
+
+})
+
+
+
+
 //Connection with db
 MongoClient.connect(mongoUrl, (err, client) => {
     if (err) console.log(`Error While Connecting`);
