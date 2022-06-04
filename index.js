@@ -126,6 +126,17 @@ app.put('/addtocart/:cartId/:productId/:quantity', (req, res) => {
         res.send(result);
     });
 });
+app.put('/addtocart/:cartId/:productId/:quantity', (req, res) => {
+    let oid = Number(req.params.cartId);
+    db.collection('cart').updateOne({ cartId: oid }, {
+        $push: {
+            "productIds": [req.params.productId, req.params.quantity]
+        }
+    }, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
 //Connection with db
 MongoClient.connect(mongoUrl, (err, client) => {
     if (err) console.log(`Error While Connecting`);
