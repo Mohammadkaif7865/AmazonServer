@@ -16,12 +16,76 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 // app.use(express.json());
-
-
+app.get('/', (req, res) => {
+    res.send("Express server is running");
+});
+app.get('/items/:collections', (req, res) => {
+    db.collection(req.params.collections).find().toArray((err, result) => {
+        if (err) throw err;
+        res.send(result)
+    });
+});
+app.get('/details/:id', (req, res) => {
+    let id = Number(req.params.id)
+    db.collection('products').find({ id: id }).toArray((err, result) => {
+        if (err) throw err;
+        res.send(result)
+    });
+});
+app.get('/products', (req, res) => {
+    db.collection('products').find().toArray((err, result) => {
+        if (err) throw err;
+        res.send(result)
+    });
+});
+// 4.D *
+app.get('/orderplaced', (req, res) => {
+    db.collection('orderplaced').find().toArray((err, result) => {
+        if (err) throw err;
+        res.send(result)
+    });
+});
+app.get('/cart', (req, res) => {
+    db.collection('cart').find().toArray((err, result) => {
+        if (err) throw err;
+        res.send(result)
+    });
+});
+app.get('/products_on_category_basis', (req, res) => {
+    let query = {}
+    if (req.query.category && req.query.sub_category) {
+        query = { category: req.query.category, sub_category: req.query.sub_category }
+    } else if (req.query.category) {
+        query = { category: req.query.category }
+    } else if (req.query.sub_category) {
+        query = { sub_category: req.query.sub_category }
+    }
+    db.collection('products').find(query).toArray((err, result) => {
+        if (err) throw err;
+        res.send(result)
+    });
+});
+app.get('/category_and_filter', (req, res) => {
+    let query = {};
+    let sort = { cost: -1 }; //-1 for decent cost and 1 for ascending cost
+    let lcost = Number(req.query.lcost);
+    let hcost = Number(req.query.hcost);
+    if (req.query.category && req.query.sub_category) {
+        query = { category: req.query.category, sub_category: req.query.sub_category, $and: [{ cost: { $gt: lcost, $lt: hcost } }] }
+    } else if (req.query.category) {
+        query = { category: req.query.category, $and: [{ cost: { $gt: lcost, $lt: hcost } }] }
+    } else if (req.query.sub_category) {
+        query = { sub_category: req.query.sub_category, $and: [{ cost: { $gt: lcost, $lt: hcost } }] }
+    }
+    db.collection('products').find(query).sort(sort).toArray((err, result) => {
+        if (err) throw err;
+        res.send(result)
+    });
+});
 //Connection with db
 MongoClient.connect(mongoUrl, (err, client) => {
     if (err) console.log(`Error While Connecting`);
-    db = client.db('restaurantdata');
+    db = client.db('Amazon');
     app.listen(port, (err) => {
         if (err) throw err;
         console.log(`Express Server listening on port ${port}`)
