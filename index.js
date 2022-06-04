@@ -97,32 +97,14 @@ app.post('/placeOrder', (req, res) => {
         res.send(result);
     });
 });
-app.get('/testing', (req, res) => {
-    db.collection('orderplaced').find({ orderId: 1 }).toArray((err, result) => {
+//10 D
+app.delete('/deleteOrder/:id', (req, res) => {
+    let oid = mongo.ObjectId(req.params.id)
+    db.collection('orderplaced').remove({ _id: oid }, (err, result) => {
         if (err) throw err;
-        let totalCost = 0;
-        let x = result[0].productIds;
-        // db.collection('products').find({ id: x[0][0] }).toArray((err, result) => {
-        //     let productCost = result[0].cost;
-        //     console.log(productCost);
-        //     let cost = productCost * x[0][1];
-        //     console.log(cost);
-        //     totalCost += cost;
-        //     console.log(totalCost);
-        // })
-        let y = 0;
-        db.collection('products').find({ id: x[0][0] }).toArray((err, result) => {
-            if (err) throw err;
-            y = result[0].cost;
-        });
-        console.log(y);
-        res.send(`${totalCost}`);
+        res.send(result);
     });
-
-})
-
-
-
+});
 
 //Connection with db
 MongoClient.connect(mongoUrl, (err, client) => {
