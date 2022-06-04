@@ -105,7 +105,13 @@ app.delete('/deleteOrder/:id', (req, res) => {
         res.send(result);
     });
 });
-
+//11 D
+app.post('/addtocart', (req, res) => {
+    db.collection('cart').insertMany(req.body, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
 //Connection with db
 MongoClient.connect(mongoUrl, (err, client) => {
     if (err) console.log(`Error While Connecting`);
