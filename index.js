@@ -126,11 +126,15 @@ app.put('/addtocart/:cartId/:productId/:quantity', (req, res) => {
         res.send(result);
     });
 });
-app.put('/addtocart/:cartId/:productId/:quantity', (req, res) => {
+// db.people.update({"name":"dannie"}, {'$pull': {"interests": "guitar"}})
+// db.coll.update({"_id": 1}, {$pullAll: {"array" :[3, 4, 5]}})
+// db.lists.update({}, {$unset : {"interests.3" : 1 }}) 
+// db.lists.update({}, {$pull : {"interests" : null}})
+app.put('/removeFromCart/:cartId/:itemIndex', (req, res) => {
     let oid = Number(req.params.cartId);
     db.collection('cart').updateOne({ cartId: oid }, {
-        $push: {
-            "productIds": [req.params.productId, req.params.quantity]
+        $pull: {
+            "productIds": req.params.itemIndex
         }
     }, (err, result) => {
         if (err) throw err;
