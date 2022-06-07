@@ -119,7 +119,7 @@ app.put('/addtocart/:cartId/:productId/:quantity', (req, res) => {
     let oid = Number(req.params.cartId);
     db.collection('cart').updateOne({ cartId: oid }, {
         $push: {
-            "productIds": [req.params.productId, req.params.quantity]
+            "productIds": [Number(req.params.productId), Number(req.params.quantity)]
         }
     }, (err, result) => {
         if (err) throw err;
