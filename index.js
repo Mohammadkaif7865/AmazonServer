@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 app.get('/items/:collections', (req, res) => {
     db.collection(req.params.collections).find().toArray((err, result) => {
         if (err) throw err;
-        res.send(result)
+        res.send(result);
     });
 });
 //3 to get data of particular product
