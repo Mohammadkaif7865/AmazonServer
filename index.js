@@ -57,6 +57,7 @@ app.get('/cart', (req, res) => {
         res.send(result)
     });
 });
+
 //7 to check product on the basis or category
 app.get('/products_on_category_basis', (req, res) => {
     let query = {}
@@ -137,6 +138,40 @@ app.put('/removeFromCart/:cartId/:itemIndex', (req, res) => {
             "productIds": req.params.itemIndex
         }
     }, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+app.get('/blogs', (req, res) => {
+    db.collection('blogs').find().toArray((err, result) => {
+        if (err) throw err;
+        res.send(result)
+    });
+});
+app.get('/blog/:id', (req, res) => {
+    // Convert the ID from a string to an ObjectId
+    let id;
+    try {
+        id = mongo.ObjectId(req.params.id)
+    } catch (e) {
+        return res.status(400).send("Invalid ID format");
+    }
+
+    db.collection('blogs').findOne({ _id: id }, (err, result) => {
+        if (err) {
+            console.error('Error fetching the blog:', err);
+            return res.status(500).send("Error fetching the blog");
+        }
+        if (result) {
+            res.send(result);
+        } else {
+            res.status(404).send("Blog not found");
+        }
+    });
+});
+
+app.post('/postblogs', (req, res) => {
+    db.collection('blogs').insertMany(req.body, (err, result) => {
         if (err) throw err;
         res.send(result);
     });
